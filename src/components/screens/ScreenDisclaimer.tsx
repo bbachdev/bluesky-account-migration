@@ -11,7 +11,7 @@ export default function ScreenDisclaimer( { setStep }: ScreenDisclaimerProps ) {
   function userConfirm() {
     setStep(1)
   }
-  
+
   return (
     <div className={`flex flex-col items-center mt-8 h-full space-y-8 w-1/3 mx-auto`}>
       <p>
@@ -27,7 +27,7 @@ export default function ScreenDisclaimer( { setStep }: ScreenDisclaimerProps ) {
             <span className='text-xl'>Warning!</span>
           </span>
           <span>
-            Using this Bluesky Account Migration Assistant may result in irreversible destructive changes to your account. Please review the following information carefully before proceeding. By continuing with this process, you acknowledge and accept any potential consequences, which may include but are not limited to loss of data, modification of account settings, or the "locking out" of your account. It's strongly recommended to have an understanding of the <a className={`text-blue-400`} href="https://github.com/bluesky-social/pds/blob/main/ACCOUNT_MIGRATION.md" target="_blank" rel="noreferrer">migration process itself</a> before proceeding.
+            Using this Bluesky Account Migration Assistant may result in irreversible destructive changes to your account. Please review the following information carefully before proceeding, and ensure the server you are migrating to is hosted by either yourself, or an entity you trust. By continuing with this process, you acknowledge and accept any potential consequences, which may include but are not limited to loss of data, modification of account settings, or the "locking out" of your account. It's strongly recommended to have an understanding of the <a className={`text-blue-400`} href="https://github.com/bluesky-social/pds/blob/main/ACCOUNT_MIGRATION.md" target="_blank" rel="noreferrer">migration process itself</a> before proceeding.
             <br/><br/>Please note that this Bluesky Account Migration Assistant is not affiliated with Bluesky itself, the AtProtocol development team, or any related entity. The use of this application is at your own risk, and neither Bluesky, its affiliates, nor the application maintainer assume any liability for any damage or loss that may result from using it.
           </span>
         </p>
