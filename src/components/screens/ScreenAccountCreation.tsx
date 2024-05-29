@@ -1,5 +1,7 @@
+import AtpAgent from '@atproto/api'
 import { useState } from 'react'
 import { z } from 'zod'
+import { ring2 } from 'ldrs'
 
 const AccountCreationValues = z.object({
   oldPDSUrl: z.string(),
@@ -12,8 +14,20 @@ const AccountCreationValues = z.object({
   newInviteCode: z.string()
 })
 
-export default function ScreenAccountCreation() {
-  const [jwt, setJwt] = useState('')
+interface ScreenAccountCreationProps {
+  oldAgent: AtpAgent
+  setOldPdsAgent: React.Dispatch<React.SetStateAction<AtpAgent>>
+  newAgent: AtpAgent | undefined
+  setNewPdsAgent: React.Dispatch<React.SetStateAction<AtpAgent>>
+}
+
+export default function ScreenAccountCreation({ oldAgent, setOldPdsAgent, newAgent, setNewPdsAgent }: ScreenAccountCreationProps) {
+  ring2.register()
+
+  const [loginError, setLoginError] = useState('')
+  const [loginLoading, setLoginLoading] = useState(false)
+  const [newAccountLoading, setNewAccountLoading] = useState(false)
+  const [did, setDid] = useState<string>('')
   const [values, setValues] = useState<z.infer<typeof AccountCreationValues>>({
     oldPDSUrl: 'https://bsky.social',
     oldHandle: '',
@@ -25,13 +39,30 @@ export default function ScreenAccountCreation() {
     newInviteCode: ''
   })
 
-  function authenticate() {
+  async function authenticate() {
+    setLoginLoading(true)
+    setLoginError('')
+    //Create old PDS agent
+    setOldPdsAgent(new AtpAgent({ service: values.oldPDSUrl }))
+
     console.log('Attempt login')
     //TODO: Attempt login
-    const res = {}
-    if(res){
-      setJwt('1')
-    } 
+    await oldAgent.login({ identifier: values.oldHandle, password: values.oldPassword }).then(() => {
+      const accountDid = oldAgent.session?.did
+      if (!accountDid) {
+        setLoginError('Could not authenticate with old PDS. Please ensure values are correct.')
+        setLoginLoading(false)
+      }else{
+        console.log('Got DID', accountDid)
+        setDid(accountDid)
+        setLoginLoading(false)
+        setLoginLoading(false)
+      }
+      setLoginLoading(false)
+    }).catch(() => {
+      setLoginError('Could not authenticate with old PDS. Please ensure values are correct.')
+      setLoginLoading(false)
+    })
   }
 
   return (
@@ -47,7 +78,7 @@ export default function ScreenAccountCreation() {
       
         <div className={`flex flex-col space-y-1`}>
           <label htmlFor="old-handle" className={`text-md font-bold`}>
-            Current Handle
+            Current Handle <span className={`text-xs`}>(without @ sign)</span>
           </label>
           <input id="old-handle" className={`p-1 border-2 border-gray-400 rounded-lg text-black`} type="text" value={values.oldHandle} onChange={(e) => setValues({ ...values, oldHandle: e.target.value })} />
         </div>
@@ -59,8 +90,24 @@ export default function ScreenAccountCreation() {
           <input id="old-password" className={`p-1 border-2 border-gray-400 rounded-lg text-black`} type="password" value={values.oldPassword} onChange={(e) => setValues({ ...values, oldPassword: e.target.value })} />
         </div>
       </div>
-      <button className={`bg-blue-500 hover:bg-blue-500/90 disabled:hover:bg-blue-500 disabled:opacity-60 text-white mt-8 w-full py-2 px-4 rounded`} onClick={() => authenticate()}>Authenticate</button>
-      { jwt && 
+      {loginError && 
+      <div className={`mt-8 text-left text-red-500 border-red-500 bg-red-400/20 p-2 rounded-lg`}>
+        <span>Could not authenticate with old PDS. Please ensure values are correct and try again.</span>
+      </div>
+      }
+      <button className={`bg-blue-500 hover:bg-blue-500/90 disabled:hover:bg-blue-500 disabled:opacity-60 text-white mt-8 w-full py-2 px-4 rounded flex justify-center`} onClick={() => authenticate()}>
+        {loginLoading ? (
+          <l-ring-2
+            size="24"
+            stroke="3"
+            stroke-length="0.25"
+            bg-opacity="0.1"
+            speed="0.8" 
+            color="white"
+          ></l-ring-2>
+        ) : "Authenticate"}
+      </button>
+      { did && 
         <>
           <div className={`flex flex-col space-y-4 mt-8`}>
             <span className={`text-sm`}>Now, create an account on the new PDS. Make sure you have the proper URL and an invite code available to you.</span>
