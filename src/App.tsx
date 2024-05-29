@@ -12,7 +12,7 @@ function App() {
     <div className={`bg-gray-800 text-white h-dvh flex flex-col`}>
       <Header />
       { step === 0 && <ScreenDisclaimer setStep={setStep} /> }
-      { step === 1 && <Step title="Create Account for New PDS"><ScreenAccountCreation/></Step> }
+      { step === 1 && <Step currentStep={step} title="Create Account for New PDS"><ScreenAccountCreation/></Step> }
       <Footer />
     </div>
   )
