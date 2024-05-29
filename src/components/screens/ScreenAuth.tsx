@@ -13,9 +13,10 @@ interface ScreenAuthProps {
   oldAgent: AtpAgent
   setOldPdsAgent: React.Dispatch<React.SetStateAction<AtpAgent>>
   setUserDid: React.Dispatch<React.SetStateAction<string>>
+  setStep: React.Dispatch<React.SetStateAction<number>>
 }
 
-export default function ScreenAuth({ oldAgent, setOldPdsAgent, setUserDid }: ScreenAuthProps) {
+export default function ScreenAuth({ oldAgent, setOldPdsAgent, setUserDid, setStep }: ScreenAuthProps) {
   ring2.register()
 
   const [error, setError] = useState('')
@@ -39,13 +40,17 @@ export default function ScreenAuth({ oldAgent, setOldPdsAgent, setUserDid }: Scr
         setIsLoading(false)
       }else{
         setUserDid(accountDid)
+        setOldPdsAgent(oldAgent)
+        setStep(2)
         setIsLoading(false)
+        
       }
       setIsLoading(false)
     }).catch(() => {
       setError('Could not authenticate with old PDS. Please ensure values are correct.')
       setIsLoading(false)
     })
+    
   }
 
   return (

@@ -10,16 +10,17 @@ const AccountCreationValues = z.object({
   newPassword: z.string(),
   newPasswordConfirm: z.string(),
   newInviteCode: z.string()
-})
+}).refine((values) => values.newPassword === values.newPasswordConfirm, { message: 'Passwords do not match', path: ['newPasswordConfirm'] })
 
 interface ScreenAccountCreationProps {
   userDid: string
   oldPdsAgent: AtpAgent
   setNewPdsAgent: React.Dispatch<React.SetStateAction<AtpAgent | undefined>>
   setNewDid: React.Dispatch<React.SetStateAction<string>>
+  setStep: Dispatch<SetStateAction<number>>
 }
 
-export default function ScreenAccountCreation({userDid, oldPdsAgent, newPdsAgent, setNewPdsAgent, setNewDid }: ScreenAccountCreationProps) {
+export default function ScreenAccountCreation({userDid, oldPdsAgent, newPdsAgent, setNewPdsAgent, setNewDid, setStep }: ScreenAccountCreationProps) {
   ring2.register()
 
   const [error, setError] = useState('')
