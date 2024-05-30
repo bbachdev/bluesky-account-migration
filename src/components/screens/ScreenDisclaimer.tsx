@@ -13,7 +13,7 @@ export default function ScreenDisclaimer( { setStep }: ScreenDisclaimerProps ) {
   }
 
   return (
-    <div className={`flex flex-col items-center mt-8 h-full space-y-8 w-1/3 mx-auto`}>
+    <div className={`flex flex-col items-center mt-8 h-full space-y-8 mx-auto`}>
       <p>
         Welcome! This Account Migration Assistant is a tool to help you migrate your Bluesky account from one Personal Data Server, aka PDS (e.g. the official "bsky.social" server) to another. This migration is a multi-step process, though before you begin, please ensure you have a proper invite code for the new server you wish to migrate to (or generate one, if you are the PDS owner).
       </p>
