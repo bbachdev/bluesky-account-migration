@@ -5,7 +5,7 @@ import { useState } from 'react'
 
 const AccountCreationValues = z.object({
   newPDSUrl: z.string(),
-  newHandle: z.string(),
+  newHandle: z.string().min(3).max(20),
   newEmail: z.string(),
   newPassword: z.string(),
   newPasswordConfirm: z.string(),
@@ -108,15 +108,17 @@ export default function ScreenAccountCreation({userDid, oldPdsAgent, setNewPdsAg
         </div>
         <div className={`flex flex-col space-y-1`}>
           <label htmlFor="new-email" className={`text-md font-bold`}>
-            New Email
+            Email
           </label>
           <input id="new-email" className={`p-1 border-2 border-gray-400 rounded-lg text-black`} type="text" value={values.newEmail} onChange={(e) => setValues({ ...values, newEmail: e.target.value })} />
         </div>
+        <hr/>
         <div className={`flex flex-col space-y-1`}>
           <label htmlFor="new-handle" className={`text-md font-bold`}>
             New Handle
           </label>
           <input id="new-handle" className={`p-1 border-2 border-gray-400 rounded-lg text-black`} type="text" value={values.newHandle} onChange={(e) => setValues({ ...values, newHandle: e.target.value })} />
+          <p>Your full handle will be: <strong>{`${values.newHandle}@${values.newPDSUrl}`}</strong></p>
         </div>
         <div className={`flex flex-col space-y-1`}>
           <label htmlFor="new-password" className={`text-md font-bold`}>
