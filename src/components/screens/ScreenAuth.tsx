@@ -79,9 +79,9 @@ export default function ScreenAuth({ oldAgent, setOldPdsAgent, setUserDid, setSt
         </div>
       </div>
       {error && 
-      <div className={`mt-8 text-left text-red-500 border-red-500 bg-red-400/20 p-2 rounded-lg`}>
-        <span>Could not authenticate with old PDS. Please ensure values are correct and try again.</span>
-      </div>
+        <div className={`mt-8 text-left text-red-500 border-red-500 bg-red-400/20 p-2 rounded-lg`}>
+          <span>Could not authenticate with old PDS. Please ensure values are correct and try again.</span>
+        </div>
       }
       <button className={`bg-blue-500 hover:bg-blue-500/90 disabled:hover:bg-blue-500 disabled:opacity-60 text-white mt-8 w-full py-2 px-4 rounded flex justify-center`} onClick={() => authenticate()}>
         {isLoading ? (

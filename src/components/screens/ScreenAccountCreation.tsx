@@ -17,10 +17,10 @@ interface ScreenAccountCreationProps {
   oldPdsAgent: AtpAgent
   setNewPdsAgent: React.Dispatch<React.SetStateAction<AtpAgent | undefined>>
   setNewDid: React.Dispatch<React.SetStateAction<string>>
-  setStep: Dispatch<SetStateAction<number>>
+  setStep: React.Dispatch<React.SetStateAction<number>>
 }
 
-export default function ScreenAccountCreation({userDid, oldPdsAgent, newPdsAgent, setNewPdsAgent, setNewDid, setStep }: ScreenAccountCreationProps) {
+export default function ScreenAccountCreation({userDid, oldPdsAgent, setNewPdsAgent, setStep }: ScreenAccountCreationProps) {
   ring2.register()
 
   const [error, setError] = useState('')
@@ -33,6 +33,54 @@ export default function ScreenAccountCreation({userDid, oldPdsAgent, newPdsAgent
     newPasswordConfirm: '',
     newInviteCode: '',
   })
+
+  async function handleSubmit() {
+    setIsLoading(true)
+    setError('')
+
+    const newAgent = new AtpAgent({ service: values.newPDSUrl })
+
+    //Get service auth token from old PDS
+    const describeRes = await newAgent.api.com.atproto.server.describeServer()
+    const newServerDid = describeRes.data.did
+    const serviceJwtRes = await oldPdsAgent.com.atproto.server.getServiceAuth({
+      aud: newServerDid,
+    })
+    const serviceJwt = serviceJwtRes.data.token
+
+    //Create new account
+    await newAgent.api.com.atproto.server.createAccount(
+      {
+        handle: values.newHandle,
+        email: values.newEmail,
+        password: values.newPassword,
+        did: userDid,
+        inviteCode: values.newInviteCode,
+      },
+      {
+        headers: { authorization: `Bearer ${serviceJwt}` },
+        encoding: 'application/json',
+      },
+    )
+
+    //Sign in to new account
+    await newAgent.login({
+      identifier: values.newHandle,
+      password: values.newPassword,
+    })
+
+    if(newAgent.session?.did !== userDid) {
+      setError('Could not authenticate with new PDS. Please ensure values are correct and try again.')
+      setIsLoading(false)
+      return
+    }
+
+    setNewPdsAgent(newAgent)
+
+    //Proceed to next step
+    setStep(3)
+    setIsLoading(false)
+  }
 
   return (
     <div className={`flex flex-col mx-auto`}>
@@ -83,7 +131,23 @@ export default function ScreenAccountCreation({userDid, oldPdsAgent, newPdsAgent
           <input id="new-password-confirm" className={`p-1 border-2 border-gray-400 rounded-lg text-black`} type="password" value={values.newPassword} onChange={(e) => setValues({ ...values, newPasswordConfirm: e.target.value })} />
         </div>
       </div>
-      <button className={`bg-blue-500 hover:bg-blue-500/90 disabled:hover:bg-blue-500 disabled:opacity-60 text-white mt-8 w-full py-2 px-4 rounded`} onClick={() => console.log(values)}>Create Account</button>
+      {error && 
+        <div className={`mt-8 text-left text-red-500 border-red-500 bg-red-400/20 p-2 rounded-lg`}>
+          <span>{error}</span>
+        </div>
+      }
+      <button className={`bg-blue-500 hover:bg-blue-500/90 disabled:hover:bg-blue-500 disabled:opacity-60 text-white mt-8 w-full py-2 px-4 rounded`} onClick={() => handleSubmit()}>
+      {isLoading ? (
+          <l-ring-2
+            size="24"
+            stroke="3"
+            stroke-length="0.25"
+            bg-opacity="0.1"
+            speed="0.8" 
+            color="white"
+          ></l-ring-2>
+        ) : "Create Account"}
+      </button>
     </div>
   )
 }
