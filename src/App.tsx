@@ -12,7 +12,7 @@ const OLD_PDS_DEFAULT_URL = 'https://bsky.social'
 function App() {
   const [step, setStep] = useState(1)
   const [oldPdsAgent, setOldPdsAgent] = useState<AtpAgent>(new AtpAgent({ service: OLD_PDS_DEFAULT_URL }))
-  const [userDid, setUserDid] = useState('teststestst')
+  const [userDid, setUserDid] = useState('')
   const [newDid, setNewDid] = useState('')
   const [newPdsAgent, setNewPdsAgent] = useState<AtpAgent | undefined>()
 
